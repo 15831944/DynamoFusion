@@ -1,34 +1,13 @@
 
-//#include "stdafx.h"
-
+#include "DynamoWrapper.h"
 #using "DynamoFusion.dll"
 
-#include <msclr\auto_gcroot.h>
+using namespace System;
 
-using namespace System::Runtime::InteropServices; // Marshal
-
-class DynamoWrapperPrivate
+[STAThreadAttribute]
+void DynamoWrapper::LoadDynamo()
 {
-public: msclr::auto_gcroot<DynamoFusion::DynamoFusionApp^> dynamoFusionApp;
-};
-
-class __declspec(dllexport) DynamoWrapper
-{
-private: DynamoWrapperPrivate* _private;
-
-public: DynamoWrapper()
-{
-	_private = new DynamoWrapperPrivate();
-	_private->dynamoFusionApp = gcnew DynamoFusion::DynamoFusionApp();
+	String^ asmLocation =
+		gcnew String("C:\\Users\\t_shansh\\AppData\\Local\\Autodesk\\webdeploy\\production\\c076e205c02e6f8f9c6eac7820ccca6953c0c53a");
+	DynamoFusion::DynamoFusionApp::Run(asmLocation);
 }
-
-public:  void Initialize1()
-{
-	_private->dynamoFusionApp->Run();
-}
-
-public: ~DynamoWrapper()
-{
-	delete _private;
-}
-};

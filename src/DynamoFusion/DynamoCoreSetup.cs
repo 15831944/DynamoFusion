@@ -8,13 +8,16 @@ using Dynamo.Logging;
 using Dynamo.Core;
 using Dynamo.Wpf.ViewModels.Watch3D;
 using Dynamo.Applications;
+using DynamoShapeManager;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using System.IO;
+using Dynamo.Scheduler;
 
 namespace DynamoFusion
 {
     public class DynamoCoreSetup
     {
-        //private SettingsMigrationWindow migrationWindow;
         private DynamoViewModel viewModel = null;
         private string commandFilePath;
 
@@ -29,29 +32,29 @@ namespace DynamoFusion
             commandFilePath = cmdLineArgs.CommandFilePath;
         }
 
-        public void RunApplication(Application app)
+        public void RunApplication(string asmLocation)
         {
             try
             {
-                //DynamoModel.RequestMigrationStatusDialog += MigrationStatusDialogRequested;
+                var model = Dynamo.Applications.StartupUtils.MakeModel(false, asmLocation);
 
-                var model = Dynamo.Applications.StartupUtils.MakeModel(false);
-
-                viewModel = DynamoViewModel.Start(
+                var viewModel = DynamoViewModel.Start(
                     new DynamoViewModel.StartConfiguration()
                     {
-                        CommandFilePath = commandFilePath,
+                        CommandFilePath = string.Empty,
                         DynamoModel = model,
                         Watch3DViewModel = HelixWatch3DViewModel.TryCreateHelixWatch3DViewModel(new Watch3DViewModelStartupParams(model), model.Logger),
                         ShowLogin = true
                     });
 
                 var view = new DynamoView(viewModel);
-                //view.Loaded += (sender, args) => CloseMigrationWindow();
 
-                app.Run(view);
-
-                //DynamoModel.RequestMigrationStatusDialog -= MigrationStatusDialogRequested;
+                //
+                // app is needed when testing through console applicaiton.
+                //
+                //var app = new Application();
+                //app.Run(view);
+                view.Show();
 
             }
 
@@ -89,28 +92,6 @@ namespace DynamoFusion
                 Debug.WriteLine(e.StackTrace);
             }
         }
-        /*
-        private void CloseMigrationWindow()
-        {
-            if (migrationWindow == null)
-                return;
 
-            migrationWindow.Close();
-            migrationWindow = null;
-        }
-
-        private void MigrationStatusDialogRequested(SettingsMigrationEventArgs args)
-        {
-            if (args.EventStatus == SettingsMigrationEventArgs.EventStatusType.Begin)
-            {
-                migrationWindow = new SettingsMigrationWindow();
-                migrationWindow.Show();
-            }
-            else if (args.EventStatus == SettingsMigrationEventArgs.EventStatusType.End)
-            {
-                CloseMigrationWindow();
-            }
-        }
-        */
     }
 }

@@ -3,12 +3,14 @@
 
 #include "stdafx.h"
 #include "DynamoWrapper.h"
+//#include "DynamoFusionWrapper"
+//#using <DynamoFusionWrapper.dll>
 
 [System::STAThread]
 int main()
 {
 	DynamoWrapper* test = new DynamoWrapper();
-	test->Initialize1();
+	test->LoadDynamo();
 	return 0;
 }
 

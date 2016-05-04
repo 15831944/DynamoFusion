@@ -20,7 +20,7 @@ namespace ConsoleApplication1
         [STAThread]
         static void Main(string[] args)
         {
-            DynamoFusion.DynamoFusionApp.Run();
+            DynamoFusion.DynamoFusionApp.Run("");
         }
 
         /// <summary>

@@ -1,8 +1,10 @@
+#include "DynamoWrapper.h"
+
+//#pragma unmanaged
 
 #include <Core/CoreAll.h>
 #include <Fusion/FusionAll.h>
 #include <CAM/CAMAll.h>
-#include "DynamoWrapper.h"
 
 #include <sstream>
 
@@ -10,12 +12,38 @@ using namespace adsk::core;
 using namespace adsk::fusion;
 using namespace adsk::cam;
 
-const std::string commandIdOnModelWorkspace = "launchCommandOnWorkspaceDynamo";
-const std::string commandIdOnPanel = "launchCommandOnPanelDynamo";
-const std::string iconResources = "./resources";
+struct Commands
+{
+	std::string Id;
+	std::string Name;
+	std::string Description;
+	std::string Resources;
+};
 
 Ptr<Application> app;
 Ptr<UserInterface> ui;
+
+/// Create the command definition.
+Ptr<CommandDefinition> createCommandDefinition(Commands cmd)
+{
+	Ptr<CommandDefinitions> commandDefinitions = ui->commandDefinitions();
+	if (!commandDefinitions)
+		return nullptr;
+
+	// Be fault tolerant in case the command is already added.
+	Ptr<CommandDefinition> cmDef = commandDefinitions->itemById(cmd.Id);
+	if (!cmDef)
+	{
+		cmDef = commandDefinitions->addButtonDefinition(
+			cmd.Id,
+			cmd.Name,
+			cmd.Description,
+			cmd.Resources
+			);
+	}
+
+	return cmDef;
+}
 
 class CommandExecutedHandler : public adsk::core::CommandEventHandler
 {
@@ -34,17 +62,37 @@ public:
 		if (!parentDefinition)
 			return;
 
-		DynamoWrapper* test = new DynamoWrapper();
-		test->Initialize1();
+		Ptr<CommandInputs> inputs = command->commandInputs();
+		if (!inputs)
+			return;
 
-		std::stringstream ss;
-		ss << "command: " + parentDefinition->id() << " executed successfully";
+		//
+		// Get Bodies here
+		//
+		Ptr<SelectionCommandInput> selectionInput = inputs->itemById("selectEnt");
+		if (selectionInput) {
+			int i = 0;
+			while (i < selectionInput->selectionCount()) {
+				i++;
+			}
+		}
 
-		ui->messageBox(ss.str());
+		//
+		// Only loads Dynamo if the correct ID; Not sure if this is the right way to do it but it works.
+		//
+		if (parentDefinition->id() == "DynamoLaunch1") {
+			DynamoWrapper::LoadDynamo();
+		}
+
+		if (ui) {
+			std::stringstream ss;
+			ss << "command: " + parentDefinition->id() << " executed successfully";
+			ui->messageBox(ss.str());
+		}
 	}
 };
 
-class CommandCreatedOnModelWorkspaceHandler : public adsk::core::CommandCreatedEventHandler
+class CommandCreatedHandler : public adsk::core::CommandCreatedEventHandler
 {
 public:
 	void notify(const Ptr<CommandCreatedEventArgs>& eventArgs) override
@@ -60,21 +108,38 @@ public:
 				return;
 			exec->add(&onCommandExecuted_);
 
-			if (ui)
-				ui->messageBox("QAT command created successfully");
+			Ptr<CommandDefinition> parentDefinition = command->parentCommandDefinition();
+			if (!parentDefinition)
+				return;
+
+			Ptr<CommandInputs> inputs = command->commandInputs();
+			if (!inputs)
+				return;
+
+			// 
+			// Create selection input
+			//
+			if (parentDefinition->id() == "ObjectSelect1") {
+				Ptr<SelectionCommandInput> selectionInput = inputs->addSelectionInput("selectEnt", "Bodies", "Select 1 or more bodies.");
+				if (!selectionInput)
+					return;
+				selectionInput->addSelectionFilter("Bodies");
+				selectionInput->setSelectionLimits(1, 0);
+			}
+
+			if (ui) {
+				std::stringstream ss;
+				ss << "command: " + parentDefinition->id() << " created successfully";
+				ui->messageBox(ss.str());
+			}
 		}
 	}
 private:
 	CommandExecutedHandler onCommandExecuted_;
-} onCommandCreatedOnModelWorkspace;
+} onCommandCreated;
 
-[System::STAThread]
 extern "C" XI_EXPORT bool run(const char* context)
 {
-	const std::string commandName = "Dynamo";
-	const std::string commandDescription = "Launch Dynamo";
-	const std::string commandResources = "./resources";
-
 	app = Application::get();
 	if (!app)
 		return false;
@@ -83,82 +148,65 @@ extern "C" XI_EXPORT bool run(const char* context)
 	if (!ui)
 		return false;
 
-	Ptr<CommandDefinitions> commandDefinitions = ui->commandDefinitions();
-	if (!commandDefinitions)
-		return false;
-
-	ui->messageBox("in run");
-
 	// Object Model Reference:
 	// http://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/images/Fusion.pdf
 	//
+	// 1) Create the command definition.
+	// 2) Connect to the command created event.
+	// 3) Add at least one control for the definition in the UI.
+	// 4) Your add-in waits.
+	// When user runs the command:
+	//	5) Fusion creates a Command object.
+	//	6) Fires the command craeted event to the owner.
+	// 7) Create command inpus to define the command dialog.
+	// 8) Connect to command related events.
+	// 9) Fusion display the command dialog.
+	// 10) User interacts with the dialog to provide the input.
+	// 11) React to events.
+	// 12) Create the final result in the command executed event handler.
+	//
 	// add a command button on Quick Access Toolbar
 	//
-	Ptr<Toolbars> toolbars = ui->toolbars();
-	if (!toolbars)
+	///////////////////////////////////////////////////////////////////////////
+
+	const struct Commands launchDynamoCmd = {
+		"DynamoLaunch1",
+		"Launch Dynamo",
+		"Launch Dynamo in-process with Fusion 360",
+		"./resources/Dynamo"
+	};
+	Ptr<CommandDefinition> launchCmdDefinition = createCommandDefinition(launchDynamoCmd);
+	Ptr<CommandCreatedEvent> cmdCreatedEvent = launchCmdDefinition->commandCreated();
+	if (!cmdCreatedEvent)
 		return false;
+	cmdCreatedEvent->add(&onCommandCreated);
 
-	Ptr<Toolbar> toolbarModelWorkspace = toolbars->itemById("QAT");
-	if (!toolbarModelWorkspace)
+	Ptr<ToolbarPanel> toolbarPanel = ui->allToolbarPanels()->itemById("SolidScriptsAddinsPanel");
+	if (!toolbarPanel)
 		return false;
+	Ptr<DropDownControl> dropDown = toolbarPanel->controls()->addDropDown("Dynamo", launchDynamoCmd.Resources);
 
-	Ptr<ToolbarControls> toolbarControlsModelWorkspace = toolbarModelWorkspace->controls();
-	if (!toolbarControlsModelWorkspace)
+	dropDown->controls()->addCommand(launchCmdDefinition);
+
+	ui->messageBox("A Dynamo command is successfully added to the panel in modeling workspace");
+
+	////////////////////////////////////////////////////////////////////////////
+
+	const struct Commands ObjectSelectCmd = {
+		"ObjectSelect1",
+		"Load Objects to Dynamo",
+		"Select Objects base on user clicks and loads them to Dynamo",
+		"./resources/Object Select"
+	};
+	Ptr<CommandDefinition> objectSelectDefinition = createCommandDefinition(ObjectSelectCmd);
+	Ptr<CommandCreatedEvent> cmdCreatedEvent2 = objectSelectDefinition->commandCreated();
+	if (!cmdCreatedEvent2)
 		return false;
-	Ptr<ToolbarControl> toolbarControlModelWorkspace = toolbarControlsModelWorkspace->itemById(commandIdOnPanel);
-	if (!toolbarControlModelWorkspace)
-	{	
-		Ptr<CommandDefinition> commandDefinitionModelWorkspace = commandDefinitions->itemById(commandIdOnPanel);
-		if (!commandDefinitionModelWorkspace)
-		{
-			commandDefinitionModelWorkspace = commandDefinitions->addButtonDefinition(commandIdOnPanel, commandName, commandDescription, commandResources);
+	cmdCreatedEvent2->add(&onCommandCreated);
 
-		}
+	dropDown->controls()->addCommand(objectSelectDefinition);
 
-		Ptr<CommandCreatedEvent> cmdCreatedEvent = commandDefinitionModelWorkspace->commandCreated();
-		if (!cmdCreatedEvent)
-			return false;
-		cmdCreatedEvent->add(&onCommandCreatedOnModelWorkspace);
-		toolbarControlModelWorkspace = toolbarControlsModelWorkspace->addCommand(commandDefinitionModelWorkspace);
-		if (!toolbarControlsModelWorkspace)
-			return false;
-		
-		toolbarControlModelWorkspace->isVisible(true);
-		ui->messageBox("A Dynamo command button is successfully added to the Quick Access Toolbar");
-
-		//
-		// add a new panel in modeling workspace
-		//
-		Ptr<Workspaces> workspaces = ui->workspaces();
-		if (!workspaces)
-			return false;
-		Ptr<Workspace> modelingWorkspace = workspaces->itemById("FusionSolidEnvironment");
-		if (!modelingWorkspace)
-			return false;
-		Ptr<ToolbarPanels> toolbarPanels = modelingWorkspace->toolbarPanels();
-		if (!toolbarPanels)
-			return false;
-		Ptr<ToolbarControls> toolbarControlsPanel = toolbarPanels->add("DYN", "Dynamo", "10", true)->controls();
-		if (!toolbarControlsPanel)
-			return false;
-		Ptr<ToolbarControl> toolbarControlPanel = toolbarControlsPanel->itemById(commandIdOnModelWorkspace);
-		if (!toolbarControlPanel)
-		{
-			Ptr<CommandDefinition> commandDefinitionPanel = commandDefinitions->itemById(commandIdOnModelWorkspace);
-			if (!commandDefinitionPanel)
-			{
-				commandDefinitionPanel = commandDefinitions->addButtonDefinition(commandIdOnModelWorkspace, commandName, commandDescription, commandResources);
-			}
-			Ptr<CommandCreatedEvent> cmdCreatedEvent = commandDefinitionPanel->commandCreated();
-			if (!cmdCreatedEvent)
-				return false;
-			cmdCreatedEvent->add(&onCommandCreatedOnModelWorkspace);
-			toolbarControlPanel = toolbarControlsPanel->addCommand(commandDefinitionPanel);
-			if (toolbarControlPanel)
-				toolbarControlPanel->isVisible(true);
-			ui->messageBox("A Dynamo command is successfully added to the panel in modeling workspace");
-		}
-	}
+	ui->messageBox("A Select Object command is successfully added to the panel in modeling workspace");
 
 	return true;
 }
@@ -193,3 +241,5 @@ BOOL APIENTRY DllMain(HMODULE hmodule, DWORD reason, LPVOID reserved)
 }
 
 #endif // XI_WIN
+
+//#pragma unmanaged

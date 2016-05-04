@@ -17,17 +17,16 @@ namespace DynamoFusion
         }
 
         [STAThread]
-        public static void Run()
+        public static void Run(string asmLocation)
         {
-            string[] args = new string[] { "" };
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
             //Include Dynamo Core path in System Path variable for helix to load properly.
             UpdateSystemPathForProcess();
 
+            var args = new string[] { "" };
             var setup = new DynamoCoreSetup(args);
-            var app = new Application();
-            setup.RunApplication(app);
+            setup.RunApplication(asmLocation);
         }
 
         /// <summary>

@@ -44,6 +44,10 @@
     <Reference Include="DynamoInstallDetective">
       <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoInstallDetective.dll</HintPath>
     </Reference>
+    <Reference Include="DynamoShapeManager, Version=1.0.1.1191, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoShapeManager.dll</HintPath>
+    </Reference>
     <Reference Include="DynamoUtilities">
       <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoUtilities.dll</HintPath>
     </Reference>
@@ -69,7 +73,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy  "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)DynamoFusionWrapper" /R /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy  "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)DynamoFusionWrapper" /R /Y
+xcopy  "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)cpp_bin\x64\Debug" /R /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
