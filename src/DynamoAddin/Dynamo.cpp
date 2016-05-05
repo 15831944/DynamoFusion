@@ -23,6 +23,8 @@ struct Commands
 Ptr<Application> app;
 Ptr<UserInterface> ui;
 
+void BRepBodyGeometryInfo(Ptr<UserInterface> ui, Ptr<BRepBody> body);
+
 /// Create the command definition.
 Ptr<CommandDefinition> createCommandDefinition(Commands cmd)
 {
@@ -76,35 +78,74 @@ public:
 		//
 		// Create array for storing objects
 		//
-		Ptr<Base> * objects = new Ptr<Base>[selCount];
-
+		Ptr<BRepBody> * objects = new Ptr<BRepBody>[selCount];
 		//
 		// Store the objects in the array
 		//
-		for (int i = 0; i < selCount; i++)
+		for (size_t i = 0; i < selCount; i++)
 		{
 			objects[i] = selectionInput->selection(i)->entity();
+			BRepBodyGeometryInfo(ui, objects[i]);
+			/*
+			Ptr<BRepEdges> edges = objects[i]->edges();
+			size_t count = edges->count();
+			for (size_t j = 0; j < count; j++) {
+
+			Ptr<Curve3D> someCurve = edges->item(j)->geometry();
+
+			if (Ptr<Arc3D> arcGeom = someCurve) {
+			std::string arc3DInfo = Arc3DGeometryInfo(arcGeom);
+			ui->messageBox(arc3DInfo, "Arc3D Info");
+			}
+			else if (Ptr<Circle3D> circGeom = someCurve) {
+			std::string circle3DInfo = Circle3DGeometryInfo(circGeom);
+			ui->messageBox(circle3DInfo, "Circle3D Info");
+			}
+			else if (Ptr<Ellipse3D> circGeom = someCurve) {
+			std::string ellipse3DInfo = Ellipse3DGeometryInfo(circGeom);
+			ui->messageBox(ellipse3DInfo, "Ellipse3D Info");
+			}
+			else if (Ptr<EllipticalArc3D> circGeom = someCurve) {
+			std::string ellipticalArc3DInfo = EllipticalArc3DGeometryInfo(circGeom);
+			ui->messageBox(ellipticalArc3DInfo, "EllipticalArc3D Info");
+			}
+			else if (Ptr<InfiniteLine3D> circGeom = someCurve) {
+			std::string infiniteLine3DInfo = InfiniteLine3DGeometryInfo(circGeom);
+			ui->messageBox(infiniteLine3DInfo, "InfiniteLine3D Info");
+			}
+			else if (Ptr<Line3D> circGeom = someCurve) {
+			std::string line3DInfo = Line3DGeometryInfo(circGeom);
+			ui->messageBox(line3DInfo, "Line3D Info");
+			}
+			else if (Ptr<NurbsCurve3D> circGeom = someCurve) {
+			std::string nurbsCurve3DInfo = NurbsCurve3DGeometryInfo(circGeom);
+			ui->messageBox(nurbsCurve3DInfo, "NurbsCurve3D Info");
+			}
+
+			}
+			*/
 		}
 
 		//
 		// Retrieve items from the array
 		//
+		/*
 		for (int i = 0; i < selCount; i++)
 		{
-			Ptr<ConstructionPoint> pt = objects[i];
-			const char * ot = objects[i]->objectType();
-			if (pt)
-			{
-				// Do something...
-			}
+		Ptr<ConstructionPoint> pt = objects[i];
+		const char * ot = objects[i]->objectType();
+		if (pt)
+		{
+		// Do something...
 		}
-
+		}
+		*/
 		//
 		// Delete array
 		//
-		for (int i = 0; i < selCount; i++)
+		for (size_t i = 0; i < selCount; i++)
 			objects[i].detach();
-		delete objects;
+		//delete objects;
 
 		//----------------------------------------------------------------------------------------
 

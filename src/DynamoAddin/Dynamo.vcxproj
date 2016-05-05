@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Dynamo.cpp" />
+    <ClCompile Include="GeometryInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Dynamo.manifest">
