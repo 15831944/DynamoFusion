@@ -68,14 +68,45 @@ public:
 
 		//
 		// Get Bodies here
+		// http://adndevblog.typepad.com/manufacturing/2016/02/array-of-fusion-objects-in-c.html
 		//
 		Ptr<SelectionCommandInput> selectionInput = inputs->itemById("selectEnt");
-		if (selectionInput) {
-			int i = 0;
-			while (i < selectionInput->selectionCount()) {
-				i++;
+		int selCount = selectionInput->selectionCount();
+
+		//
+		// Create array for storing objects
+		//
+		Ptr<Base> * objects = new Ptr<Base>[selCount];
+
+		//
+		// Store the objects in the array
+		//
+		for (int i = 0; i < selCount; i++)
+		{
+			objects[i] = selectionInput->selection(i)->entity();
+		}
+
+		//
+		// Retrieve items from the array
+		//
+		for (int i = 0; i < selCount; i++)
+		{
+			Ptr<ConstructionPoint> pt = objects[i];
+			const char * ot = objects[i]->objectType();
+			if (pt)
+			{
+				// Do something...
 			}
 		}
+
+		//
+		// Delete array
+		//
+		for (int i = 0; i < selCount; i++)
+			objects[i].detach();
+		delete objects;
+
+		//----------------------------------------------------------------------------------------
 
 		//
 		// Only loads Dynamo if the correct ID; Not sure if this is the right way to do it but it works.
@@ -83,6 +114,8 @@ public:
 		if (parentDefinition->id() == "DynamoLaunch1") {
 			DynamoWrapper::LoadDynamo();
 		}
+
+		//----------------------------------------------------------------------------------------
 
 		if (ui) {
 			std::stringstream ss;
@@ -126,6 +159,8 @@ public:
 				selectionInput->addSelectionFilter("Bodies");
 				selectionInput->setSelectionLimits(1, 0);
 			}
+
+			//----------------------------------------------------------------------------------------
 
 			if (ui) {
 				std::stringstream ss;
@@ -190,7 +225,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 
 	ui->messageBox("A Dynamo command is successfully added to the panel in modeling workspace");
 
-	////////////////////////////////////////////////////////////////////////////
+	//----------------------------------------------------------------------------------------
 
 	const struct Commands ObjectSelectCmd = {
 		"ObjectSelect1",
@@ -207,6 +242,8 @@ extern "C" XI_EXPORT bool run(const char* context)
 	dropDown->controls()->addCommand(objectSelectDefinition);
 
 	ui->messageBox("A Select Object command is successfully added to the panel in modeling workspace");
+
+	//----------------------------------------------------------------------------------------
 
 	return true;
 }
