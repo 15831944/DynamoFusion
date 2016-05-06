@@ -68,92 +68,38 @@ public:
 		if (!inputs)
 			return;
 
-		//
-		// Get Bodies here
-		// http://adndevblog.typepad.com/manufacturing/2016/02/array-of-fusion-objects-in-c.html
-		//
-		Ptr<SelectionCommandInput> selectionInput = inputs->itemById("selectEnt");
-		int selCount = selectionInput->selectionCount();
+		if (parentDefinition->id() == "ObjectSelect1") {
+			//
+			// Get Bodies here
+			// http://adndevblog.typepad.com/manufacturing/2016/02/array-of-fusion-objects-in-c.html
+			//
+			Ptr<SelectionCommandInput> selectionInput = inputs->itemById("selectEnt");
+			int selCount = selectionInput->selectionCount();
 
-		//
-		// Create array for storing objects
-		//
-		Ptr<BRepBody> * objects = new Ptr<BRepBody>[selCount];
-		//
-		// Store the objects in the array
-		//
-		for (size_t i = 0; i < selCount; i++)
-		{
-			objects[i] = selectionInput->selection(i)->entity();
-			BRepBodyGeometryInfo(ui, objects[i]);
-			/*
-			Ptr<BRepEdges> edges = objects[i]->edges();
-			size_t count = edges->count();
-			for (size_t j = 0; j < count; j++) {
+			//
+			// Create array for storing objects
+			//
+			Ptr<BRepBody> * objects = new Ptr<BRepBody>[selCount];
+			//
+			// Store the objects in the array
+			//
+			for (size_t i = 0; i < selCount; i++)
+			{
+				objects[i] = selectionInput->selection(i)->entity();
 
-			Ptr<Curve3D> someCurve = edges->item(j)->geometry();
-
-			if (Ptr<Arc3D> arcGeom = someCurve) {
-			std::string arc3DInfo = Arc3DGeometryInfo(arcGeom);
-			ui->messageBox(arc3DInfo, "Arc3D Info");
-			}
-			else if (Ptr<Circle3D> circGeom = someCurve) {
-			std::string circle3DInfo = Circle3DGeometryInfo(circGeom);
-			ui->messageBox(circle3DInfo, "Circle3D Info");
-			}
-			else if (Ptr<Ellipse3D> circGeom = someCurve) {
-			std::string ellipse3DInfo = Ellipse3DGeometryInfo(circGeom);
-			ui->messageBox(ellipse3DInfo, "Ellipse3D Info");
-			}
-			else if (Ptr<EllipticalArc3D> circGeom = someCurve) {
-			std::string ellipticalArc3DInfo = EllipticalArc3DGeometryInfo(circGeom);
-			ui->messageBox(ellipticalArc3DInfo, "EllipticalArc3D Info");
-			}
-			else if (Ptr<InfiniteLine3D> circGeom = someCurve) {
-			std::string infiniteLine3DInfo = InfiniteLine3DGeometryInfo(circGeom);
-			ui->messageBox(infiniteLine3DInfo, "InfiniteLine3D Info");
-			}
-			else if (Ptr<Line3D> circGeom = someCurve) {
-			std::string line3DInfo = Line3DGeometryInfo(circGeom);
-			ui->messageBox(line3DInfo, "Line3D Info");
-			}
-			else if (Ptr<NurbsCurve3D> circGeom = someCurve) {
-			std::string nurbsCurve3DInfo = NurbsCurve3DGeometryInfo(circGeom);
-			ui->messageBox(nurbsCurve3DInfo, "NurbsCurve3D Info");
-			}
+				//
+				// Get Geometry Info
+				//
+				BRepBodyGeometryInfo(ui, objects[i]);
 
 			}
-			*/
-		}
 
-		//
-		// Retrieve items from the array
-		//
-		/*
-		for (int i = 0; i < selCount; i++)
-		{
-		Ptr<ConstructionPoint> pt = objects[i];
-		const char * ot = objects[i]->objectType();
-		if (pt)
-		{
-		// Do something...
-		}
-		}
-		*/
-		//
-		// Delete array
-		//
-		for (size_t i = 0; i < selCount; i++)
-			objects[i].detach();
-		//delete objects;
-
-		//----------------------------------------------------------------------------------------
-
-		//
-		// Only loads Dynamo if the correct ID; Not sure if this is the right way to do it but it works.
-		//
-		if (parentDefinition->id() == "DynamoLaunch1") {
-			DynamoWrapper::LoadDynamo();
+			//
+			// Delete array
+			//
+			for (size_t i = 0; i < selCount; i++)
+				objects[i].detach();
+			//delete objects;
 		}
 
 		//----------------------------------------------------------------------------------------
