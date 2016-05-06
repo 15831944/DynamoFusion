@@ -3,8 +3,6 @@
 
 #include "stdafx.h"
 #include "DynamoWrapper.h"
-//#include "DynamoFusionWrapper"
-//#using <DynamoFusionWrapper.dll>
 
 [System::STAThread]
 int main()

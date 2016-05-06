@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Dynamo.cpp" />
+    <ClCompile Include="FusionCore.cpp" />
     <ClCompile Include="GeometryInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +101,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dynamo.h" />
+    <ClInclude Include="FusionCore.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

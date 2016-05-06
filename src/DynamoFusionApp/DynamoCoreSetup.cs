@@ -14,7 +14,7 @@ using System.Reflection;
 using System.IO;
 using Dynamo.Scheduler;
 
-namespace DynamoFusion
+namespace DynamoFusionApp
 {
     public class DynamoCoreSetup
     {

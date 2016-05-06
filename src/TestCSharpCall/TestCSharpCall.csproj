@@ -55,9 +55,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamoFusion\DynamoFusion.csproj">
+    <ProjectReference Include="..\DynamoFusion\DynamoFusionApp.csproj">
       <Project>{586608d5-2fe8-4810-b516-c85d03f45e1e}</Project>
-      <Name>DynamoFusion</Name>
+      <Name>DynamoFusionApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
