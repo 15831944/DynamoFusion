@@ -1,0 +1,14 @@
+{
+	"autodeskProduct":	"Fusion360",
+	"type":	"addin",
+	"author":	"",
+	"description":	{
+		"":	""
+	},
+	"supportedOS":	"windows",
+	"editEnabled":	true,
+	"id":	"54f22bca-f87c-4cd4-83f7-b9fc760be47d",
+	"version":	"",
+	"runOnStartup":	false,
+	"sourcewindows":	"Dynamo.vcxproj"
+}

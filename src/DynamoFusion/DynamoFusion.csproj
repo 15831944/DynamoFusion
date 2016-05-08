@@ -4,58 +4,35 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{586608D5-2FE8-4810-B516-C85D03F45E1E}</ProjectGuid>
+    <ProjectGuid>{FE8BA8B6-25F3-4185-BF5A-158A22B7A2A1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DynamoFusion</RootNamespace>
     <AssemblyName>DynamoFusion</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DynamoApplications">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoApplications.dll</HintPath>
+    <Reference Include="ProtoGeometry">
+      <HintPath>..\..\extern\ProtoGeometry.dll</HintPath>
     </Reference>
-    <Reference Include="DynamoCore">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoCore.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamoCoreWpf">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoCoreWpf.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamoInstallDetective">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoInstallDetective.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamoShapeManager, Version=1.0.1.1191, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoShapeManager.dll</HintPath>
-    </Reference>
-    <Reference Include="DynamoUtilities">
-      <HintPath>..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoUtilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.Prism">
-      <HintPath>..\..\..\Dynamo\extern\prism\Microsoft.Practices.Prism.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -64,22 +41,26 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamoCoreSetup.cs" />
-    <Compile Include="DynamoFusionApp.cs" />
+    <Compile Include="Fusion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FusionManagedWrapper\FusionManagedWrapper.vcxproj">
+      <Project>{2f19fafe-7bae-4b6c-a580-4854e78090c0}</Project>
+      <Name>FusionManagedWrapper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy  "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)DynamoFusionWrapper" /R /Y
-xcopy  "$(MSBuildProjectDirectory)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)cpp_bin\x64\Debug" /R /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy  "$(ProjectDir)bin\$(Platform)\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)bin\x64\$(Configuration)\" /R /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-  </Target>-->
+  </Target>
+  -->
 </Project>

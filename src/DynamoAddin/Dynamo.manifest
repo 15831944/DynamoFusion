@@ -1,1 +1,1 @@
-{"autodeskProduct":"Fusion360","type":"addin","author":"Shannon","description":{"":""},"supportedOS":"windows","editEnabled":true,"id":"35914b08-6675-498f-a670-d222693bbb1d","version":"0.1.0","runOnStartup":true,"sourcewindows":"Dynamo.vcxproj"}
+{"autodeskProduct":"Fusion360","type":"addin","author":"","description":{"":""},"supportedOS":"windows","editEnabled":true,"id":"84bbd967-912b-4ec5-9db1-2bc3e5511f71","version":"","runOnStartup":false,"sourcewindows":"Dynamo2.vcxproj"}

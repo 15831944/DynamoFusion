@@ -1,16 +1,13 @@
+#include "Dynamo.h"
 #include "DynamoWrapper.h"
 
 //#pragma unmanaged
 
-#include <Core/CoreAll.h>
-#include <Fusion/FusionAll.h>
-#include <CAM/CAMAll.h>
-
 #include <sstream>
 
-using namespace adsk::core;
-using namespace adsk::fusion;
-using namespace adsk::cam;
+
+Ptr<Application> app;
+Ptr<UserInterface> ui;
 
 struct Commands
 {
@@ -20,8 +17,6 @@ struct Commands
 	std::string Resources;
 };
 
-Ptr<Application> app;
-Ptr<UserInterface> ui;
 
 void BRepBodyGeometryInfo(Ptr<UserInterface> ui, Ptr<BRepBody> body);
 
@@ -100,6 +95,14 @@ public:
 			for (size_t i = 0; i < selCount; i++)
 				objects[i].detach();
 			//delete objects;
+		}
+		//----------------------------------------------------------------------------------------
+
+		//
+		// Only loads Dynamo if the correct ID; Not sure if this is the right way to do it but it works.
+		//
+		if (parentDefinition->id() == "DynamoLaunch1") {
+			DynamoWrapper::LoadDynamo();
 		}
 
 		//----------------------------------------------------------------------------------------
@@ -218,7 +221,7 @@ extern "C" XI_EXPORT bool run(const char* context)
 		"ObjectSelect1",
 		"Load Objects to Dynamo",
 		"Select Objects base on user clicks and loads them to Dynamo",
-		"./resources/Object Select"
+		"./resources/Dynamo"
 	};
 	Ptr<CommandDefinition> objectSelectDefinition = createCommandDefinition(ObjectSelectCmd);
 	Ptr<CommandCreatedEvent> cmdCreatedEvent2 = objectSelectDefinition->commandCreated();
