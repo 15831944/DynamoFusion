@@ -24,7 +24,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 int/
-DynamoAddin_bin/
+*.dll
 
 # Visual Studio 2015 cache/options directory
 .vs/
