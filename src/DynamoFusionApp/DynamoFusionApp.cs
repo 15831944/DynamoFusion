@@ -5,30 +5,38 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 
+using Dynamo.Models;
+using Dynamo.ViewModels;
+using Dynamo.Wpf.ViewModels.Watch3D;
+using Dynamo.Controls;
+
 namespace DynamoFusionApp
 {
     public class DynamoFusionApp
     {
+        private DynamoViewModel dynamoViewModel;
         private static string dynamopath;
 
-        static DynamoFusionApp()
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-        }
-
-        [STAThread]
-        public static void Run(string asmLocation)
+        public void Run(string asmLocation)
         {
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
             //Include Dynamo Core path in System Path variable for helix to load properly.
             UpdateSystemPathForProcess();
 
-            var args = new string[] { "" };
-            var setup = new DynamoCoreSetup(args);
-            setup.RunApplication(asmLocation);
+            StartUI(asmLocation);
+
         }
 
+        #region Fusion to Dynamo Nodes
+
+        public void CreateSelectionNode()
+        {
+            var command = new DynamoModel.CreateNodeCommand(new[] { Guid.NewGuid() }, "Fusion.SelectEntity", 0, 0, true, false);
+            dynamoViewModel.ExecuteCommand(command);
+        }
+
+        #endregion
         /// <summary>
         /// Handler to the ApplicationDomain's AssemblyResolve event.
         /// If an assembly's location cannot be resolved, an exception is
@@ -61,11 +69,13 @@ namespace DynamoFusionApp
                 throw new Exception(string.Format("The location of the assembly, {0} could not be resolved for loading.", assemblyPath), ex);
             }
         }
-
+        
+        #region private methods
+        
         /// <summary>
         /// Returns the path of Dynamo Core installation.
         /// </summary>
-        public static string DynamoCorePath
+        private static string DynamoCorePath
         {
             get
             {
@@ -107,5 +117,60 @@ namespace DynamoFusionApp
                         EnvironmentVariableTarget.Process) + ";" + DynamoCorePath;
             Environment.SetEnvironmentVariable("Path", path, EnvironmentVariableTarget.Process);
         }
+
+        private void StartUI(string asmLocation)
+        {
+            try
+            {
+                var model = Dynamo.Applications.StartupUtils.MakeModel(false, asmLocation);
+
+                dynamoViewModel = DynamoViewModel.Start(
+                    new DynamoViewModel.StartConfiguration()
+                    {
+                        CommandFilePath = string.Empty,
+                        DynamoModel = model,
+                        Watch3DViewModel = HelixWatch3DViewModel.TryCreateHelixWatch3DViewModel(new Watch3DViewModelStartupParams(model), model.Logger),
+                        ShowLogin = true
+                    });
+
+                var view = new DynamoView(dynamoViewModel);
+                view.Show();
+            }
+            catch (Exception e)
+            {
+                try
+                {
+#if DEBUG
+                    // Display the recorded command XML when the crash happens, 
+                    // so that it maybe saved and re-run later
+                    if (dynamoViewModel != null)
+                        dynamoViewModel.SaveRecordedCommand.Execute(null);
+#endif
+
+                    //DynamoModel.IsCrashing = true;
+                    //InstrumentationLogger.LogException(e);
+                    //StabilityTracking.GetInstance().NotifyCrash();
+
+                    //if (viewModel != null)
+                    //{
+                    //    // Show the unhandled exception dialog so user can copy the 
+                    //    // crash details and report the crash if she chooses to.
+                    //    viewModel.Model.OnRequestsCrashPrompt(null,
+                    //        new CrashPromptArgs(e.Message + "\n\n" + e.StackTrace));
+
+                    //    // Give user a chance to save (but does not allow cancellation)
+                    //    viewModel.Exit(allowCancel: false);
+                    //}
+                }
+                catch
+                {
+                }
+
+                Debug.WriteLine(e.Message);
+                Debug.WriteLine(e.StackTrace);
+            }
+        }
+        
+        #endregion
     }
 }

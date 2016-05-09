@@ -1,7 +1,10 @@
 // DynamoWrapper.h
+/*
 #pragma once
 
-//class DynamoWrapperPrivate;
+#include <msclr\auto_gcroot.h>
+
+#using "DynamoFusionApp.dll"
 
 // The following ifdef block is the standard way of creating macros which make exporting 
 // from a DLL simpler. All files within this DLL are compiled with the DESIGNSCRIPTRUNNER_EXPORTS
@@ -15,14 +18,47 @@
 #define DYNAMO_API __declspec(dllimport)
 #endif
 
+class DynamoWrapperPrivate
+{
+public: msclr::auto_gcroot<DynamoFusionApp::DynamoFusionApp^> dynamoWrapper;
+};
+
 class DYNAMO_API DynamoWrapper
 {
 
-//public: DynamoWrapper();
+private: 
+	DynamoWrapper();
+
+	static DynamoWrapper* wrapper;
+	DynamoWrapperPrivate* dynamoAPI;
 
 //public: ~DynamoWrapper();
 
-public: static void LoadDynamo();
+public: 
+	static DynamoWrapper* GetInstance();
+	void LoadDynamo();
+	void CreateSelectionNode();
+};
+
+DynamoWrapper* DynamoWrapper::wrapper = nullptr;
+
+*/
+
+
+// DynamoManagedWrapper.h
+
+#pragma once
+
+
+class DynamoWrapper
+{
+
+public:
+
+	static DynamoWrapper* GetInstance();
+
+	void LoadDynamo();
+	void CreateSelectionNode();
 
 };
 
