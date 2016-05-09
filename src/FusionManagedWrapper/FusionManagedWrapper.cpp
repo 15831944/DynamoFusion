@@ -6,6 +6,44 @@
 
 using namespace FusionManagedWrapper;
 
+#pragma region Fusion Entity
+
+cli::array<FusionEntity^>^ FusionEntity::getSelectedEntities()
+{
+	auto bodies = FusionCore::getSelectedEntities();
+	int size = bodies.size();
+	cli::array<FusionEntity^>^ bodyArray = gcnew cli::array<FusionEntity^>(size);
+
+	for (int i = 0; i < size; i++)
+	{
+		bodyArray[i] = gcnew FusionSolid(bodies[i].detach());
+	}
+	return bodyArray;
+}
+
+FusionEntity::~FusionEntity()
+{
+	//m_pEntity->deleteMe();
+}
+
+#pragma endregion
+
+#pragma region Fusion Solids
+
+FusionSolid::FusionSolid(BRepBody* pSolid)
+{
+	m_pSolid = pSolid;
+}
+
+FusionSolid::~FusionSolid()
+{
+	m_pSolid->deleteMe();
+}
+
+#pragma endregion
+
+#pragma region Fusion Sketches
+
 FusionCurve::FusionCurve(SketchCircle* pCurve)
 {
 	m_pCurve = pCurve;
@@ -24,3 +62,4 @@ FusionCurve::~FusionCurve()
 	m_pCurve->deleteMe();
 }
 
+#pragma endregion

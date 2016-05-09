@@ -1,13 +1,17 @@
-#include "Dynamo.h"
+
 #include "DynamoWrapper.h"
 
 //#pragma unmanaged
 
-#include <sstream>
+#include "Dynamo.h"
 
+#include <sstream>
 
 Ptr<Application> app;
 Ptr<UserInterface> ui;
+
+// Global reference to selected objects in model workspaces
+Ptr<SelectionCommandInput> selectionInput;
 
 struct Commands
 {
@@ -68,33 +72,9 @@ public:
 			// Get Bodies here
 			// http://adndevblog.typepad.com/manufacturing/2016/02/array-of-fusion-objects-in-c.html
 			//
-			Ptr<SelectionCommandInput> selectionInput = inputs->itemById("selectEnt");
-			int selCount = selectionInput->selectionCount();
-
-			//
-			// Create array for storing objects
-			//
-			Ptr<BRepBody> * objects = new Ptr<BRepBody>[selCount];
-			//
-			// Store the objects in the array
-			//
-			for (size_t i = 0; i < selCount; i++)
-			{
-				objects[i] = selectionInput->selection(i)->entity();
-
-				//
-				// Get Geometry Info
-				//
-				BRepBodyGeometryInfo(ui, objects[i]);
-
-			}
-
-			//
-			// Delete array
-			//
-			for (size_t i = 0; i < selCount; i++)
-				objects[i].detach();
-			//delete objects;
+			selectionInput = inputs->itemById("selectEnt");
+			auto dynamo_api = DynamoWrapper::GetInstance();
+			dynamo_api->CreateSelectionNode();
 		}
 		//----------------------------------------------------------------------------------------
 
@@ -102,7 +82,8 @@ public:
 		// Only loads Dynamo if the correct ID; Not sure if this is the right way to do it but it works.
 		//
 		if (parentDefinition->id() == "DynamoLaunch1") {
-			DynamoWrapper::LoadDynamo();
+			auto dynamo_api = DynamoWrapper::GetInstance();
+			dynamo_api->LoadDynamo();
 		}
 
 		//----------------------------------------------------------------------------------------

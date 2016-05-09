@@ -6,12 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 using FusionManagedWrapper;
+using Autodesk.DesignScript.Runtime;
 
 // This is the Dynamo-Fusion node library for Fusion specific nodes in Dynamo
 namespace DynamoFusion
 {
-    public class Fusion
+    public static class Fusion
     {
+        [IsVisibleInDynamoLibrary(false)]
+        public static IEnumerable<FusionEntity> SelectEntity()
+        {
+            return FusionEntity.getSelectedEntities();
+        }
+
         public static FusionCurve ImportCurve(IEnumerable<Curve> curves)
         {
             var geometries = curves.ToArray();

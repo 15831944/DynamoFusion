@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamoServices">
+      <HintPath>..\..\extern\DynamoBinaries\DynamoServices.dll</HintPath>
+    </Reference>
     <Reference Include="ProtoGeometry">
       <HintPath>..\..\extern\ProtoGeometry.dll</HintPath>
     </Reference>
