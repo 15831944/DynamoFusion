@@ -49,4 +49,16 @@ namespace FusionManagedWrapper {
 		SketchCircle* m_pCurve;
 
 	};
+
+	public ref class FusionSelection
+	{
+
+	public:
+		FusionSelection();
+		static cli::array<FusionEntity^>^ StartSelection();
+
+	protected:
+		~FusionSelection();
+
+	};
 }

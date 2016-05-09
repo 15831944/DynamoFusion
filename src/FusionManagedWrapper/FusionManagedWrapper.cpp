@@ -6,6 +6,31 @@
 
 using namespace FusionManagedWrapper;
 
+#pragma region Fusion Selection
+
+cli::array<FusionEntity^>^ FusionSelection::StartSelection()
+{
+	// (1) Create Command
+
+	// (2) Get Bodies
+	auto bodies = FusionCore::getSelectedEntities();
+	int size = bodies.size();
+	cli::array<FusionEntity^>^ bodyArray = gcnew cli::array<FusionEntity^>(size);
+
+	for (int i = 0; i < size; i++)
+	{
+		bodyArray[i] = gcnew FusionSolid(bodies[i].detach());
+	}
+	return bodyArray;
+}
+
+FusionEntity::~FusionEntity()
+{
+	//m_pEntity->deleteMe();
+}
+
+#pragma endregion
+
 #pragma region Fusion Entity
 
 cli::array<FusionEntity^>^ FusionEntity::getSelectedEntities()

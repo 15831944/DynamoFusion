@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 using FusionManagedWrapper;
 using Autodesk.DesignScript.Runtime;
+using Dynamo.Graph.Nodes;
+using Dynamo.UI.Commands;
+using Dynamo.Wpf;
+using Dynamo.Controls;
+using DynamoFusion.Controls;
 
 // This is the Dynamo-Fusion node library for Fusion specific nodes in Dynamo
 namespace DynamoFusion
@@ -34,12 +39,16 @@ namespace DynamoFusion
         private static FusionCurve ToFusionCurve(Curve curve)
         {
             var cv = curve as Circle;
-            if(cv != null)
+            if (cv != null)
             {
                 var point = cv.CenterPoint;
                 return FusionCurve.createCircle(point.X, point.Y, point.Z, cv.Radius);
             }
             return null;
         }
+
+        
     }
+
+    
 }
