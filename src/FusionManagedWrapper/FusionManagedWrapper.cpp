@@ -44,22 +44,33 @@ FusionSolid::~FusionSolid()
 
 #pragma region Fusion Sketches
 
-FusionCurve::FusionCurve(SketchCircle* pCurve)
+FusionCurve::FusionCurve(SketchCircle* pCurve, int id)
 {
 	m_pCurve = pCurve;
+	identifier = id;
+	//entity = gcnew FusionCurve(m_pCurve);
 }
 
-FusionCurve^ FusionCurve::createCircle(double x, double y, double z, double r)
+//int* FusionCurve::getID(FusionCurve fusionCurve) {
+//	return fusionCurve.getid();
+//}
+
+FusionCurve^ FusionCurve::createCircle(double x, double y, double z, double r, int id)
 {
 	Ptr<Point3D> point = Point3D::create(x, y, z);
-	Ptr<SketchCircle> circle = FusionCore::circleByPointRadius(point, r);
+	Ptr<SketchCircle> circle = FusionCore::circleByPointRadius(point, r, id);
 
-	return gcnew FusionCurve(circle.detach());
+	std::vector<Ptr<adsk::core::Attribute>> attributes = circle->attributes()->itemsByGroup("Dynamo-SketchCircle");
+	std::string ID = attributes[0]->name();
+	
+	return gcnew FusionCurve(circle.detach(), std::stoi(ID.substr(2, ID.length())));
+
+	//return entity;
 }
 
 FusionCurve::~FusionCurve()
 {
-	m_pCurve->deleteMe();
+	//m_pCurve->deleteMe();
 }
 
 #pragma endregion

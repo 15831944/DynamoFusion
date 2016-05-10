@@ -39,14 +39,19 @@ namespace FusionManagedWrapper {
 	{
 
 	public:
-		static FusionCurve^ createCircle(double x, double y, double z, double r);
+		static FusionCurve^ createCircle(double x, double y, double z, double r, int id);
+		//static int* getID(FusionCurve fusionCurve);
+		static int getid() {
+			return identifier;
+		}
 
 	protected:
-		FusionCurve(SketchCircle* pCurve);
+		FusionCurve(SketchCircle* pCurve, int id);
 		~FusionCurve();
 
 	private:
 		SketchCircle* m_pCurve;
-
+		static int identifier;
+		//FusionCurve^ entity;
 	};
 }

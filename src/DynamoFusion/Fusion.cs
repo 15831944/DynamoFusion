@@ -13,6 +13,10 @@ namespace DynamoFusion
 {
     public static class Fusion
     {
+        // private static FusionCurve entity = null;
+
+        static List<int> IDList = new List<int> { };
+
         [IsVisibleInDynamoLibrary(false)]
         public static IEnumerable<FusionEntity> SelectEntity()
         {
@@ -24,20 +28,37 @@ namespace DynamoFusion
             var geometries = curves.ToArray();
             var circle = geometries[0] as Circle;
             FusionCurve entity = null;
-            if (circle != null)
+            if (entity == null)
             {
-                entity = ToFusionCurve(circle);
+                if (circle != null)
+                {
+                    if(IDList.Count()==0)
+                        entity = ToFusionCurve(circle, 0);
+                    else
+                        entity = ToFusionCurve(circle, IDList[0]);
+                }
+                
             }
+            
             return entity;
         }
 
-        private static FusionCurve ToFusionCurve(Curve curve)
+        private static FusionCurve ToFusionCurve(Curve curve, int indentifier)
         {
             var cv = curve as Circle;
             if(cv != null)
             {
                 var point = cv.CenterPoint;
-                return FusionCurve.createCircle(point.X, point.Y, point.Z, cv.Radius);
+                FusionCurve obj = FusionCurve.createCircle(point.X, point.Y, point.Z, cv.Radius, indentifier);
+                int currID = FusionCurve.getid();
+                foreach (var id in IDList) {
+                    if(currID == id)
+                    {
+                        return obj;
+                    }
+                }
+                IDList.Add(currID);
+                return obj;
             }
             return null;
         }
