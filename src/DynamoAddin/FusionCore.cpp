@@ -3,6 +3,21 @@
 //#pragma unmanaged
 #include "FusionCore.h"
 
+void FusionCore::createAndExecuteSelectionCmd() 
+{
+	const struct Commands ObjectSelectCmd = {
+		"FusionSelectionFromFusion",
+		"Load Objects to Dynamo",
+		"Select Objects base on user clicks and loads them to Dynamo",
+		"./resources/Dynamo"
+	};
+	Ptr<CommandDefinition> objectSelectDefinition = createCommandDefinition(ObjectSelectCmd);
+	Ptr<CommandCreatedEvent> cmdCreatedEvent2 = objectSelectDefinition->commandCreated();
+	if (!cmdCreatedEvent2)
+		return;
+	cmdCreatedEvent2->add(&onCommandCreated);
+}
+
 Ptr<SketchPoint> FusionCore::pointByCoordinates(double x, double y, double z)
 {
 	Ptr<Design> design = app->activeProduct();

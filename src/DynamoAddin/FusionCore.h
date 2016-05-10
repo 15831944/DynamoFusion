@@ -26,4 +26,6 @@ public:
 	Ptr<SketchCircle> static circleByPointRadius(Ptr<Point3D> point, double r);
 
 	std::vector<Ptr<BRepBody>> static getSelectedEntities();
+
+	void createAndExecuteSelectionCmd();
 };

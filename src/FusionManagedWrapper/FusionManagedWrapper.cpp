@@ -10,7 +10,7 @@ using namespace FusionManagedWrapper;
 
 cli::array<FusionEntity^>^ FusionSelection::StartSelection()
 {
-	// (1) Create Command
+	// (1) Create & Execute Command
 
 	// (2) Get Bodies
 	auto bodies = FusionCore::getSelectedEntities();
