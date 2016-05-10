@@ -28,18 +28,37 @@ namespace DynamoFusion
             var geometries = curves.ToArray();
             var circle = geometries[0] as Circle;
             FusionCurve entity = null;
-            if (entity == null)
+
+            if (circle != null)
             {
-                if (circle != null)
+                if (IDList.Count() == 0)
                 {
-                    if(IDList.Count()==0)
-                        entity = ToFusionCurve(circle, 0);
-                    else
-                        entity = ToFusionCurve(circle, IDList[0]);
+                    IDList.Add(1);
+                    entity = ToFusionCurve(circle, 0);
                 }
-                
+                else
+                {
+                    var i = 0;
+                        
+                    while (i < IDList.Count())
+                    {
+                        if (IDList.Contains(IDList[i]))
+                        {
+                            entity = ToFusionCurve(circle, IDList[i]);
+                            return entity;
+                        }
+                            
+                        i++;
+                    }
+                    if(i == IDList.Count())
+                    {
+                        //var idToAdd = IDList.Count() + 1;
+                        IDList.Add(IDList[i-1]+1);
+                        entity = ToFusionCurve(circle, IDList[i-1] + 1);
+                    }
+                }
             }
-            
+
             return entity;
         }
 
@@ -57,7 +76,7 @@ namespace DynamoFusion
                         return obj;
                     }
                 }
-                IDList.Add(currID);
+                
                 return obj;
             }
             return null;

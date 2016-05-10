@@ -9,6 +9,9 @@ using Dynamo.Models;
 using Dynamo.ViewModels;
 using Dynamo.Wpf.ViewModels.Watch3D;
 using Dynamo.Controls;
+using DynamoShapeManager;
+using Dynamo.Scheduler;
+using Dynamo.Interfaces;
 
 namespace DynamoFusionApp
 {
@@ -122,7 +125,11 @@ namespace DynamoFusionApp
         {
             try
             {
-                var model = Dynamo.Applications.StartupUtils.MakeModel(false, asmLocation);
+
+                //var model = Dynamo.Applications.StartupUtils.MakeModel(false, asmLocation);
+
+                //var nodeLibraryPath = @"C:\Users\sh4nn\AppData\Roaming\Autodesk\Autodesk Fusion 360\API\AddIns\Dynamo\src\bin\x64\Debug";
+                var model = MakeModel("");
 
                 dynamoViewModel = DynamoViewModel.Start(
                     new DynamoViewModel.StartConfiguration()
@@ -170,7 +177,29 @@ namespace DynamoFusionApp
                 Debug.WriteLine(e.StackTrace);
             }
         }
-        
+
+        private static DynamoModel MakeModel(string nodeLibraryPath)
+        {
+            var version = LibraryVersion.Version222;
+            var libGFolderName = string.Format("libg_{0}", ((int)version));
+            var preloaderLocation = Path.Combine(DynamoCorePath, libGFolderName);
+            var geometryFactoryPath = Path.Combine(preloaderLocation, Utilities.GeometryFactoryAssembly);
+
+            var config = new DynamoModel.DefaultStartConfiguration()
+            {
+                GeometryFactoryPath = geometryFactoryPath,
+                ProcessMode = TaskProcessMode.Asynchronous
+            };
+
+            config.UpdateManager = null;
+            config.StartInTestMode = false;
+
+            config.PathResolver = new FusionPathResolver(nodeLibraryPath) as IPathResolver;
+
+            var model = DynamoModel.Start(config);
+            return model;
+        }
+
         #endregion
     }
 }

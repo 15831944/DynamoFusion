@@ -82,12 +82,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DynamoFusionApp.cs" />
+    <Compile Include="FusionPathResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /R /Y "$(SolutionDir)..\extern\DynamoBinaries\DynamoApplications.dll" "$(SolutionDir)bin\x64\$(Configuration)\"
-xcopy /R /Y "$(SolutionDir)..\extern\DynamoBinaries\DynamoInstallDetective.dll" "$(SolutionDir)bin\x64\$(Configuration)\"</PreBuildEvent>
+    <PreBuildEvent>xcopy /R /Y "$(SolutionDir)..\extern\DynamoBinaries\DynamoInstallDetective.dll" "$(SolutionDir)bin\x64\$(Configuration)\"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy  "$(ProjectDir)bin\$(Platform)\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)DynamoFusionWrapper" /R /Y

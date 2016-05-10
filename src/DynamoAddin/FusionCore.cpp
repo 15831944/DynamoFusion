@@ -40,43 +40,57 @@ Ptr<SketchCircle> FusionCore::circleByPointRadius(Ptr<Point3D> point, double r, 
 	std::vector<Ptr<Attribute>> attributes = design->findAttributes("Dynamo-SketchCircle", id);
 	if (idNumber == 0 || attributes.size()==0)
 	{
+		std::stringstream ss;
+		ss.precision(6);
+		ss << std::fixed;	
+
 		circle = circles->addByCenterRadius(
 			Point3D::create(point->x(), point->y(), point->z()), r);
 
 		std::string id = "id" + std::to_string(attributes.size() + 1);
 		circle->attributes()->add("Dynamo-SketchCircle", id, "1");
+		/*
+		ss << "Suppose to create Circle at Point = " << point->x() << "," << point->y() << "," << point->z() << "\n";
+		Ptr<Point3D> pt = circle->geometry()->center();
+		ss << "Created Circle at Point = " << pt->x() << "," << pt->y() << "," << pt->z() << "\n";
+		ss << "Added ID = " << id << "\n";
+		attributes = design->findAttributes("Dynamo-SketchCircle", id);
+		ss << "Attributes size = " << attributes.size() << "\n";*/
+		//ui->messageBox(ss.str());
 	}
-	while(i<sketchCount) {
+	else {
+		while (i < sketchCount) {
 
-		circle = circles->item(i);
-		
-		if (circle && circle->attributes()->itemByName("Dynamo-SketchCircle", id)) {
-			
-			std::stringstream ss;
-			ss.precision(6);
-			ss << std::fixed;
-			/*
-			Ptr<Point3D> pt = circle->geometry()->center();
-			ss << "Centre BEFORE: " << pt->x() << ", " << pt->y() << ", " << pt->z() << "\n";
-			circle->centerSketchPoint()->move(point->asVector());
-			pt = circle->geometry()->center();
-			ss << "Centre AFTER: " << pt->x() << ", " << pt->y() << ", " << pt->z() << "\n";
-			if (pt->asVector() == point->asVector()) {
-			ss << "I can COMPARE POINTS through vector!"<< "\n";
+			circle = circles->item(i);
+
+			if (circle && circle->attributes()->itemByName("Dynamo-SketchCircle", id)) {
+				//ui->messageBox("Found ID = " + id);
+				/*
+				std::stringstream ss;
+				ss.precision(6);
+				ss << std::fixed;
+
+				Ptr<Point3D> pt = circle->geometry()->center();
+				ss << "Centre BEFORE: " << pt->x() << ", " << pt->y() << ", " << pt->z() << "\n";
+				circle->centerSketchPoint()->move(point->asVector());
+				pt = circle->geometry()->center();
+				ss << "Centre AFTER: " << pt->x() << ", " << pt->y() << ", " << pt->z() << "\n";
+				if (pt->asVector() == point->asVector()) {
+				ss << "I can COMPARE POINTS through vector!"<< "\n";
+				}
+				*/
+				//ui->messageBox(ss.str());
+
+				circle->radius(r);
+
+				break;
+
 			}
-			*/
-			//ui->messageBox(ss.str());
 
-			circle->radius(r);
-
-			break;
+			i++;
 
 		}
-
-		i++;
-
 	}
-	
 	return circle;
 }
 
