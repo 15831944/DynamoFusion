@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalIncludeDirectories>$(SolutionDir)DynamoAddin;$(APPDATA)/Autodesk/Autodesk Fusion 360/API/CPP/include;</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>../extern</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Dynamo.lib;fusion.lib;core.lib;</AdditionalDependencies>

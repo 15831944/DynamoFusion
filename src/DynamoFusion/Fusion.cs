@@ -18,13 +18,36 @@ namespace DynamoFusion
         static List<int> IDList = new List<int> { };
 
         [IsVisibleInDynamoLibrary(false)]
-        public static IEnumerable<FusionEntity> SelectEntity()
+        public static IEnumerable<Geometry> SelectEntity()
         {
-            return FusionEntity.getSelectedEntities();
+            var geometries = new List<Geometry>();
+            var entities = FusionEntity.getSelectedEntities();
+            foreach (var entity in entities)
+            {
+                geometries.AddRange(ToDynamoGeometry(entity));
+            }
+            return geometries;
         }
 
-        public static FusionCurve ImportCurve(IEnumerable<Curve> curves)
+        public static IEnumerable<FusionEntity> ImportGeometry(IEnumerable<Geometry> geometries)
         {
+            var entities = new List<FusionEntity>();
+            var id = 1;
+            foreach (var geometry in geometries)
+            {
+                var curve = geometry as Curve;
+                if (curve != null)
+                {
+                    if (!IDList.Contains(id))
+                    { 
+                        IDList.Add(id);
+                    }
+                    entities.Add(ToFusionCurve(curve, id));
+                    id++;
+                }
+            }
+            return entities;
+            /*
             var geometries = curves.ToArray();
             var circle = geometries[0] as Circle;
             FusionCurve entity = null;
@@ -58,8 +81,9 @@ namespace DynamoFusion
                     }
                 }
             }
-
+            
             return entity;
+            */
         }
 
         private static FusionCurve ToFusionCurve(Curve curve, int indentifier)
@@ -69,17 +93,19 @@ namespace DynamoFusion
             {
                 var point = cv.CenterPoint;
                 FusionCurve obj = FusionCurve.createCircle(point.X, point.Y, point.Z, cv.Radius, indentifier);
-                int currID = FusionCurve.getid();
-                foreach (var id in IDList) {
-                    if(currID == id)
-                    {
-                        return obj;
-                    }
-                }
-                
                 return obj;
             }
             return null;
+        }
+        private static IEnumerable<Geometry> ToDynamoGeometry(FusionEntity entity)
+        {
+            var geometries = new List<Geometry>();
+            var fusionSolid = entity as FusionSolid;
+            if (fusionSolid != null)
+            {
+                geometries.AddRange(fusionSolid.Decompose());
+            }
+            return geometries;
         }
     }
 }

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "FusionCore.h"
+#using "..\..\extern\ProtoGeometry.dll"
 
 using namespace System;
-
+using namespace Autodesk::DesignScript::Geometry;
 
 namespace FusionManagedWrapper {
 
@@ -23,15 +24,35 @@ namespace FusionManagedWrapper {
 
 	public ref class FusionSolid : FusionEntity
 	{
-
 	public:
 		FusionSolid(BRepBody* pSolid);
-
+		cli::array<Geometry^>^ Decompose();
 	protected:
 		~FusionSolid();
 
 	private:
+		//static std::vector<Geometry^> BRepFacesInfo(Ptr<BRepFaces> faces);
+		cli::array<Geometry^>^ BRepFacesInfo(Ptr<BRepFaces> faces);
 		BRepBody* m_pSolid;
+	};
+
+	public ref class FusionCone : FusionSolid
+	{
+	public:
+		FusionCone(Ptr<BRepFace> pFace, Ptr<Point3D> origin, Ptr<Vector3D> axis, double radius, double halfAngle);
+
+	private:
+		BRepFace* m_pCone;
+	};
+
+	public ref class FusionSurface : FusionSolid
+	{
+	public:
+		FusionSurface(Ptr<BRepFace> pFace);
+		static Autodesk::DesignScript::Geometry::NurbsSurface^ CreateNurbsSurface(Ptr<adsk::core::NurbsSurface> nurbsSurface);
+
+	private:
+		BRepFace* m_pFace;
 
 	};
 
@@ -46,7 +67,7 @@ namespace FusionManagedWrapper {
 		}
 
 	protected:
-		FusionCurve(SketchCircle* pCurve, int id);
+		FusionCurve(SketchCircle* pCurve);
 		~FusionCurve();
 
 	private:
