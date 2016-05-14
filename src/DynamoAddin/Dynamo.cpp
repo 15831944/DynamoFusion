@@ -67,7 +67,7 @@ public:
 		if (!inputs)
 			return;
 
-		if (parentDefinition->id() == "ObjectSelect1") {
+		if (parentDefinition->id() == "FusionSelectionFromFusion") {
 			//
 			// Get Bodies here
 			// http://adndevblog.typepad.com/manufacturing/2016/02/array-of-fusion-objects-in-c.html
@@ -124,7 +124,7 @@ public:
 			// 
 			// Create selection input
 			//
-			if (parentDefinition->id() == "ObjectSelect1") {
+			if (parentDefinition->id() == "FusionSelectionFromFusion") {
 				Ptr<SelectionCommandInput> selectionInput = inputs->addSelectionInput("selectEnt", "Bodies", "Select 1 or more bodies.");
 				if (!selectionInput)
 					return;
